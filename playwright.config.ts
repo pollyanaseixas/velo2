@@ -12,6 +12,12 @@ import { defineConfig, devices } from '@playwright/test';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  //tempo máximo para cada teste completo
+  timeout: 60000,
+  // tempo máximo para assertions verificações (toBeVisibile(), toHaveText() 5 segundos
+  expect:{
+    timeout: 5000 //não vale pena aumentar porque pode ficar lento, vale apena usar o explicito
+  },
   testDir: './playwright/e2e',
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -30,6 +36,14 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    // tempo máximo para intereção como clic(), fill()
+    //quando o valor é 0, herda o limite geral do teste
+    actionTimeout: 5000, 
+  
+
+    // tempo máximo para navegações como goto(), WaitForURL()
+    //Quando o valor é 0, herda o limite do timeout geral do teste
+    navigationTimeout: 10000,
   },
 
   /* Configure projects for major browsers */
@@ -76,4 +90,19 @@ export default defineConfig({
   //   url: 'http://localhost:3000',
   //   reuseExistingServer: !process.env.CI,
   // },
+
+  webServer: {
+    command: 'npm run dev -- --host',
+    url: 'http://localhost:5173',
+    reuseExistingServer: !process.env.CI,
+  },
 });
+
+
+// // "scripts": {
+//   /*  */"dev": "vite",
+//  /*  */ "test:e2e": "playwright test",
+//  /*  */ "test:headed": "playwright test --headed",
+//  /*  */ "test:debug": "playwright test --debug",
+//  /*  */ "codegen": "playwright codegen http://localhost:5173"
+// /*  */
