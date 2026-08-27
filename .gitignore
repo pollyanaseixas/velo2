@@ -29,3 +29,11 @@ dist-ssr
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+# Environment variables
+.env
+
+# Sensitive docs
+docs/db.password.txt
+
+# Supabase local config
+supabase/.temp/
