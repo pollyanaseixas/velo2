@@ -1,4 +1,4 @@
-import { test } from '../support/fixtures'
+import { test, expect } from '../support/fixtures'
 
 test.describe('Configuração do Veículo', () => {
   test.beforeEach(async ({ app }) => {
@@ -10,7 +10,7 @@ test.describe('Configuração do Veículo', () => {
 
     await app.configurator.selectColor('Midnight Black')
     await app.configurator.expectPrice('R$ 40.000,00')
-    await app.configurator.expectCarImageSrc(/midnight-black-aero-wheels/)
+    await app.configurator.expectCarImageSrc('/src/assets/midnight-black-aero-wheels.png')
   })
 
   test('deve atualizar o preço e a imagem ao alterar as rodas, e restaurar os valores padrão', async ({ app }) => {
@@ -18,14 +18,14 @@ test.describe('Configuração do Veículo', () => {
 
     await app.configurator.selectWheels(/Sport Wheels/)
     await app.configurator.expectPrice('R$ 42.000,00')
-    await app.configurator.expectCarImageSrc(/glacier-blue-sport-wheels/)
+    await app.configurator.expectCarImageSrc('/src/assets/glacier-blue-sport-wheels.png')
 
     await app.configurator.selectWheels(/Aero Wheels/)
     await app.configurator.expectPrice('R$ 40.000,00')
-    await app.configurator.expectCarImageSrc(/glacier-blue-aero-wheels/)
+    await app.configurator.expectCarImageSrc('/src/assets/glacier-blue-aero-wheels.png')
   })
 
-  test('deve atualizar o preço com opcionais e persistir no checkout', async ({ app }) => {
+  test('CT03 - deve atualizar o preço com opcionais e persistir no checkout', async ({ page, app }) => {
     await app.configurator.expectPrice('R$ 40.000,00')
 
     await app.configurator.checkOptional(/Precision Park/i)
@@ -39,7 +39,10 @@ test.describe('Configuração do Veículo', () => {
     await app.configurator.expectPrice('R$ 40.000,00')
 
     await app.configurator.finishConfigurator()
-    await app.checkout.expectLoaded()
-    await app.checkout.expectSummaryTotal('R$ 40.000,00')
+
+    await expect(page).toHaveURL(/\/order$/)
+    await expect(page.getByRole('heading', { name: 'Finalizar Pedido' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Resumo' })).toBeVisible()
+    await expect(page.getByTestId('summary-total-price')).toHaveText('R$ 40.000,00')
   })
 })
